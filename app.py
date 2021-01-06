@@ -11,6 +11,7 @@ from numpy import cbrt
 import matplotlib.pyplot as plt
 
 
+
 DATA_URL = 'https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/OxCGRT_latest.csv'
 full_df = pd.read_csv(DATA_URL,
                     parse_dates=['Date'],
@@ -25,6 +26,9 @@ full_df = pd.read_csv(DATA_URL,
 full_df = full_df.set_index('Date', drop=True)
 
 unique_countries = full_df['CountryName'].unique()
+unique_states = []
+
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 def graph_prediction(df, country='United States',
                     state=None, prediction='ConfirmedCases', window=30):
@@ -70,48 +74,72 @@ def graph_prediction(df, country='United States',
                             name='Predicted Cases'))
     return fig
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-
-
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 server = app.server
 unique_states = []
 
 app.layout = html.Div([
-    html.H2('Hello World'),
+    html.H2('COVID-19 Cumulative Infections Prediction'),
     html.H4('Country'),
     dcc.Dropdown(
-        id='dropdown_country',
+        id='dropdown-country',
         options=[{'label': i, 'value': i} for i in unique_countries],
-        value='Select a country'
+        value='None'
     ),
-    html.Div(id='country_value'),
     html.H4('State'),
-    dcc.Dropdown(
-        id='dropdown_state',
-        options=[{'label': i, 'value': i} for i in unique_states],
-        value='Select a state'
-    ),
     html.Div(id='state_value'),
-    dcc.Graph(id='graph', figure=graph_prediction(full_df))
-
+    dcc.Dropdown(id = 'dropdown-state',
+        options = [{'label':'None Available', 'value':'None'}],
+        value = 'Choose a State'
+    ),
+    html.H4('Length of Prediction'),
+    html.Div('prediction-window'),
+    dcc.Dropdown(id='dropdown-prediction-window',
+        options = [{'label':f'{i} days','value':i} for i in [30,60,90]],
+        value = 30),
+    html.H4('Prediction'),
+    html.Div(id='prediction')
 ])
 
 
-@app.callback(dash.dependencies.Output('country_value', 'children'),
-              [dash.dependencies.Input('dropdown_country', 'value')])
-def display_value(country_value):
-    global unique_states
-    unique_states = full_df[full_df['CountryName']
-                            == country_value]['RegionName'].unique()
-    return unique_states
+@app.callback(dash.dependencies.Output('dropdown-state', 'options'),
+              [dash.dependencies.Input('dropdown-country', 'value')])
+def add_states(country_value, df=full_df):
+    country_df = full_df.loc[full_df['CountryName'] == country_value]
+    state_df = country_df.loc[country_df['Jurisdiction'] 
+                                == 'STATE_TOTAL'].dropna()
+    global country
+    country = country_value
+    if len(state_df) > 0:
+        return  [{'label':'None','value':'None'}] + [{'label':i,'value':i} \
+            for i in state_df['RegionName'].dropna().unique()]
+    else:
+        return [{'label':'None', 'value':'None'}]
 
+@app.callback(dash.dependencies.Output('dropdown-state','value'),
+            [dash.dependencies.Input('dropdown-state','options')])
+def reset_state_value(state_options):
+    if state_options == [{'label':'None', 'value':'None'}]:
+        return None
+
+
+@app.callback(dash.dependencies.Output('prediction', 'children'),
+            [dash.dependencies.Input('dropdown-state','value'),
+            dash.dependencies.Input('dropdown-country','value'),
+            dash.dependencies.Input('dropdown-prediction-window','value')])
+def display_value(state_value, country_value, window_value, df=full_df):
+    if country_value != 'None':
+        return dcc.Graph(id='prediction-graph',
+                    figure = graph_prediction(full_df, state = state_value, \
+                                              country = country_value,
+                                              window=window_value)
+                    )
 
 # @app.callback(dash.dependencies.Output('state_value', 'children'),
 #             [dash.dependencies.Input('dropdown_country', 'value')])
 # def state_list(country):
-#     return full_df[full_df['CountryName'] == country_value].unique()
+#     return graph_prediction(full_df, country=country_value, state=state_value)
 
 if __name__ == '__main__':
     app.run_server(debug=True)
