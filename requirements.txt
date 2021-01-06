@@ -24,6 +24,7 @@ MarkupSafe==1.1.1
 matplotlib==3.3.3
 numpy==1.19.4
 pandas==1.1.5
+patsy==0.5.1
 Pillow==8.1.0
 plotly==4.14.1
 PyMeeus==0.3.7
@@ -32,7 +33,11 @@ pystan==2.19.1.1
 python-dateutil==2.8.1
 pytz==2019.3
 retrying==1.3.3
+scipy==1.6.0
 setuptools-git==1.2
 six==1.15.0
+statsmodels==0.12.1
 tqdm==4.55.1
 Werkzeug==1.0.1
+
+  
