@@ -28,7 +28,7 @@ def get_prediction(df, window):
     cbrt_df = cbrt(df)
     model = SARIMAX(cbrt_df, order = (0,2,0), seasonal_order = (3,2,1,7), max_iter=200,
                                         freq = 'D')
-    fit_model = model.fit(max_iter = 50, disp = False)
+    fit_model = model.fit(max_iter = 5, disp = False)
     yhat = fit_model.forecast(window)**3
     return yhat
 
