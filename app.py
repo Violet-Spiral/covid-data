@@ -6,13 +6,16 @@ import dash_html_components as html
 from plotly import graph_objects as go
 
 from statsmodels.tsa.statespace.sarimax import SARIMAX
+import warnings
+from statsmodels.tools.sm_exceptions import ConvergenceWarning
+warnings.simplefilter('ignore', ConvergenceWarning)
 import pandas as pd
 from numpy import cbrt
 from src import *
 
 # get data
 full_df = get_covid_data()
-unique_countries = full_df['CountryName'].unique()
+unique_countries = sorted(full_df['CountryName'].unique())
 
 # set initial app settings
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -21,12 +24,14 @@ server = app.server
 
 # display layout and components
 app.layout = html.Div([
-    html.H2('COVID-19 Cumulative Infections Prediction'),
+    html.H2('COVID-19 Cumulative Deaths and Positive Cases Predictor'),
+    html.Div(id='prediction-value'),
     html.H4('To Predict'),
     dcc.Dropdown(
         id='dropdown-prediction',
         options=[{'label':i,'value':i} for i in ['ConfirmedDeaths','ConfirmedCases']]
     ),
+    html.Div(id='country-value'),
     html.H4('Country'),
     dcc.Dropdown(
         id='dropdown-country',
@@ -34,13 +39,13 @@ app.layout = html.Div([
         value='None'
     ),
     html.H4('State'),
-    html.Div(id='state_value'),
+    html.Div(id='state-value'),
     dcc.Dropdown(id = 'dropdown-state',
         options = [{'label':'None', 'value':'None'}],
         value = 'None'
     ),
     html.H4('Length of Prediction'),
-    html.Div('prediction-window'),
+    html.Div(id='prediction-window'),
     dcc.Dropdown(id='dropdown-prediction-window',
         options = [{'label':f'{i} days','value':i} for i in [30,60,90]],
         value = 30),
@@ -59,16 +64,15 @@ def add_states(country_value, df=full_df):
     country = country_value
     if len(state_df) > 0:
         return  [{'label':'None','value':'None'}] + [{'label':i,'value':i} \
-            for i in state_df['RegionName'].dropna().unique()]
+            for i in sorted(state_df['RegionName'].dropna().unique())]
     else:
         return [{'label':'None', 'value':'None'}]
 
 #reset state value
-@app.callback(dash.dependencies.Output('dropdown-state','value'),
-            [dash.dependencies.Input('dropdown-state','options')])
-def reset_state_value(state_options):
-    if state_options == [{'label':'None', 'value':'None'}]:
-        return 'None'
+@app.callback(dash.dependencies.Output('dropdown-state', 'value'),
+              [dash.dependencies.Input('dropdown-country', 'value')])
+def reset_states(country_value, df=full_df):
+    return 'None'
 
 #create prediction graph
 @app.callback(dash.dependencies.Output('prediction', 'children'),
