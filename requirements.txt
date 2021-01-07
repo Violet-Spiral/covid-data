@@ -1,3 +1,4 @@
+autopep8==1.5.4
 Brotli==1.0.9
 click==7.1.2
 cmdstanpy==0.9.5
@@ -10,6 +11,7 @@ dash-html-components==1.1.1
 dash-renderer==1.8.3
 dash-table==4.11.1
 ephem==3.7.7.1
+
 Flask==1.1.2
 Flask-Compress==1.8.0
 future==0.18.2
@@ -27,6 +29,7 @@ pandas==1.1.5
 patsy==0.5.1
 Pillow==8.1.0
 plotly==4.14.1
+pycodestyle==2.6.0
 PyMeeus==0.3.7
 pyparsing==2.4.7
 pystan==2.19.1.1
@@ -37,7 +40,6 @@ scipy==1.6.0
 setuptools-git==1.2
 six==1.15.0
 statsmodels==0.12.1
+toml==0.10.2
 tqdm==4.55.1
 Werkzeug==1.0.1
-
-  
