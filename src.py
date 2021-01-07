@@ -28,7 +28,7 @@ def get_prediction(df, window):
     cbrt_df = cbrt(df)
     model = SARIMAX(cbrt_df, order = (0,2,0), seasonal_order = (3,2,1,7), max_iter=200,
                                         freq = 'D')
-    fit_model = model.fit(max_iter = 1, disp = False)
+    fit_model = model.fit(max_iter = 200, disp = False)
     yhat = fit_model.forecast(window)**3
     return yhat
 
@@ -81,7 +81,8 @@ def graph_prediction(full_df, country='United States',
                         limit_area='inside', downcast='infer')
     df = df[df[prediction] > 0]
     
-    yhat = get_prediction(df, window)
+    # yhat = get_prediction(df, window)
+    yhat = df[prediction]
     fig = get_graph(df, yhat, state, country, window, prediction)
 
     return fig
