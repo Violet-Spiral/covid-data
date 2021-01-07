@@ -19,54 +19,39 @@ def get_covid_data():
                                     'ConfirmedCases','ConfirmedDeaths','Jurisdiction'],
                         error_bad_lines=False)
     full_df = full_df.set_index('Date', drop=True)
+    new_cols = {'ConfirmedCases':'Cumulative Cases','ConfirmedDeaths':'Cumulative Deaths'}
+    full_df = full_df.rename(columns = new_cols)
     return full_df
 
-def get_prediction(df, window):
+def get_graph(df, state, country, stat):
     """
-    Helper function for graph_prediction to create, train, and create a prediction from a SARIMA model
+    Helper function for graph_stat to create and return plotly figure of chosen statistic.
     """
-    cbrt_df = cbrt(df)
-    model = SARIMAX(cbrt_df, order = (0,2,0), seasonal_order = (3,2,1,7), max_iter=200,
-                                        freq = 'D')
-    fit_model = model.fit(max_iter = 200, disp = False)
-    yhat = fit_model.forecast(window)**3
-    return yhat
-
-def get_graph(df, yhat, state, country, window, prediction):
-    """
-    Helper function for graph_prediction to create and return plotly figure of prediction.
-    """
-    pred_start = yhat.index.date.min()
-    pred_end = yhat.index.date.max()
-    true_start = df.index.date.min()
-    true_end = df.index.date.max()
 
     if state != 'None':
-        title = f'{window} Day Forecast of Cumulative COVID-19 {prediction} in {state}, {country}'
+        title = f'Cumulative COVID-19 {stat} in {state}, {country}'
     else:
-        title = f'{window} Day Forecast of Cumulative COVID-19 {prediction} in {country}'
+        title = f'Cumulative COVID-19 {stat} in {country}'
     fig = go.Figure(
-                    data=[go.Scatter(x=df.index, y=df[prediction],
-                                    name = 'Historical Cases')],
+                    data=[go.Scatter(x=df.index, y=df[stat],
+                                    name = 'Cases')],
                     layout_title_text = title,
                     )
-    fig.add_trace(go.Scatter(x=yhat.index, y=yhat.values,
-                            name='Predicted Cases'))
     return fig
 
-def graph_prediction(full_df, country='United States',
-                    state=None, prediction='ConfirmedCases', window=30):
+def graph_stat(full_df, country='United States',
+                    state=None, stat='Cumulative Cases'):
     """
-    graph_prediction(full_df, country='United States',
-                    state=None, prediction='ConfirmedCases', window=30)
+    graph_stat(full_df, country='United States',
+                    state=None, stat='Cumulative Cases')
     ---
     full_df should be a Pandas DataFrame with a time series index.  
     Function subsets full_df in respect to state and/or country. 
-    Uses a SARIMA model to predict future COVID cases or deaths a number of days in the future defined by 'window'.  
-    Returns a plotly figure of this prediction
+    Uses a SARIMA model to graph up to date COVID cases or deaths.
+    Returns a plotly figure of deaths or cases
     """
-    if prediction not in ['ConfirmedCases','ConfirmedDeaths']:
-        prediction = 'ConfirmedCases'
+    if stat not in ['Cumulative Cases','Cumulative Deaths']:
+        stat = 'Cumulative Cases'
 
     if state in full_df['RegionName'].dropna().unique():
         df = full_df[(full_df['Jurisdiction'] == 'STATE_TOTAL') 
@@ -75,14 +60,11 @@ def graph_prediction(full_df, country='United States',
         df = full_df[(full_df['Jurisdiction'] == 'NAT_TOTAL') 
                     & (full_df['CountryName'] == country)][:-1]
 
-    df.index.freq = 'D'
-    df = df[[prediction]]
+    df = df[[stat]]
     df = df.interpolate(method='time', limit_direction='forward', 
                         limit_area='inside', downcast='infer')
-    df = df[df[prediction] > 0]
+    df = df.dropna()
     
-    # yhat = get_prediction(df, window)
-    yhat = df[prediction]
-    fig = get_graph(df, yhat, state, country, window, prediction)
+    fig = get_graph(df, state, country, stat)
 
     return fig

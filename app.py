@@ -1,16 +1,9 @@
 import os
-
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from plotly import graph_objects as go
-
-from statsmodels.tsa.statespace.sarimax import SARIMAX
-import warnings
-from statsmodels.tools.sm_exceptions import ConvergenceWarning
-warnings.simplefilter('ignore', ConvergenceWarning)
 import pandas as pd
-from numpy import cbrt
 from src import *
 
 # get data
@@ -24,15 +17,15 @@ server = app.server
 
 # display layout and components
 app.layout = html.Div([
-    html.H2('COVID-19 Cumulative Deaths and Positive Cases Predictor'),
-    html.Div(id='prediction-value'),
-    html.H4('To Predict'),
+    html.H2('COVID-19 Cumulative Deaths or Positive Cases'),
+    html.H4('To Display'),
+    html.Div(id='stat-value'),
     dcc.Dropdown(
-        id='dropdown-prediction',
-        options=[{'label':i,'value':i} for i in ['ConfirmedDeaths','ConfirmedCases']]
+        id='dropdown-stat',
+        options=[{'label':i,'value':i} for i in ['Cumulative Cases','Cumulative Deaths']]
     ),
-    html.Div(id='country-value'),
     html.H4('Country'),
+    html.Div(id='country-value'),
     dcc.Dropdown(
         id='dropdown-country',
         options=[{'label': i, 'value': i} for i in unique_countries],
@@ -44,13 +37,8 @@ app.layout = html.Div([
         options = [{'label':'None', 'value':'None'}],
         value = 'None'
     ),
-    html.H4('Length of Prediction'),
-    html.Div(id='prediction-window'),
-    dcc.Dropdown(id='dropdown-prediction-window',
-        options = [{'label':f'{i} days','value':i} for i in [30,60,90]],
-        value = 30),
-    html.H4('Prediction'),
-    html.Div(id='prediction')
+    html.H4('Graph'),
+    html.Div(id='graph')
 ])
 
 #set state options according to chosen country
@@ -74,19 +62,17 @@ def add_states(country_value, df=full_df):
 def reset_states(country_value, df=full_df):
     return 'None'
 
-#create prediction graph
-@app.callback(dash.dependencies.Output('prediction', 'children'),
+#create graph
+@app.callback(dash.dependencies.Output('graph', 'children'),
             [dash.dependencies.Input('dropdown-state','value'),
             dash.dependencies.Input('dropdown-country','value'),
-            dash.dependencies.Input('dropdown-prediction-window','value'),
-            dash.dependencies.Input('dropdown-prediction','value')])
-def display_value(state, country, window, prediction, df=full_df):
+            dash.dependencies.Input('dropdown-stat','value')])
+def display_value(state, country, stat, df=full_df):
     if country != 'None':
-        return dcc.Graph(id='prediction-graph',
-                    figure = graph_prediction(df, state=state,
+        return dcc.Graph(id='stat-graph',
+                    figure = graph_stat(df, state=state,
                                               country=country,
-                                              window=window,
-                                              prediction=prediction))
+                                              stat=stat))
 
 if __name__ == '__main__':
     app.run_server(debug=True)
