@@ -23,35 +23,41 @@ def get_covid_data():
     full_df = full_df.rename(columns = new_cols)
     return full_df
 
-def get_graph(df, state, country, stat):
+def get_graph(df, state, country, stats):
     """
-    Helper function for graph_stat to create and return plotly figure of chosen statistic.
+    get_graph(df, state, country, stats)
+    ---
+    Helper function for graph_stat to create and return plotly figure of chosen statistics.
+    ---
     """
 
     if state != 'None':
-        title = f'Cumulative COVID-19 {stat} in {state}, {country}'
+        title = f'Cumulative COVID-19 in {state}, {country}'
     else:
-        title = f'Cumulative COVID-19 {stat} in {country}'
-    fig = go.Figure(
-                    data=[go.Scatter(x=df.index, y=df[stat],
-                                    name = 'Cases')],
-                    layout_title_text = title,
-                    )
+        title = f'Cumulative COVID-19 in {country}'
+    
+    fig = go.Figure(layout_title_text = title)
+    for stat in stats:
+        fig.add_trace(go.Scatter(x=df.index, y=df[stat], name=stat))
+    fig.update_layout(showlegend=True)
+
     return fig
 
 def graph_stat(full_df, country='United States',
-                    state=None, stat='Cumulative Cases'):
+                    state=None, stats=['Cumulative Cases']):
     """
     graph_stat(full_df, country='United States',
                     state=None, stat='Cumulative Cases')
     ---
+    Graphs chosen statistic(s)
     full_df should be a Pandas DataFrame with a time series index.  
     Function subsets full_df in respect to state and/or country. 
     Uses a SARIMA model to graph up to date COVID cases or deaths.
     Returns a plotly figure of deaths or cases
+    ---
     """
-    if stat not in ['Cumulative Cases','Cumulative Deaths']:
-        stat = 'Cumulative Cases'
+    if not stats:
+        stats = ['Cumulative Cases']
 
     if state in full_df['RegionName'].dropna().unique():
         df = full_df[(full_df['Jurisdiction'] == 'STATE_TOTAL') 
@@ -60,11 +66,14 @@ def graph_stat(full_df, country='United States',
         df = full_df[(full_df['Jurisdiction'] == 'NAT_TOTAL') 
                     & (full_df['CountryName'] == country)][:-1]
 
-    df = df[[stat]]
     df = df.interpolate(method='time', limit_direction='forward', 
                         limit_area='inside', downcast='infer')
+    df['Daily Cases'] = df['Cumulative Cases'].diff()
+    df['Daily Deaths'] = df['Cumulative Deaths'].diff()
+    df = df[stats]
+
     df = df.dropna()
     
-    fig = get_graph(df, state, country, stat)
+    fig = get_graph(df, state, country, stats)
 
     return fig
