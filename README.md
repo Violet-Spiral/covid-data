@@ -19,7 +19,7 @@ Layla [@laylar](https://github.com/laylar) - DevOps, Front End Developer
 
 Make your selections at the top and a new graph will appear, displaying up-to-date data below!
 
-![Checkboxes and a graph](/img/DemoImage2021-01-07.png)
+![Checkboxes and a graph](/img/Screenshot3Lines2021-01-08.png)
 
 ## Some Story About Our Process
 
