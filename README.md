@@ -12,6 +12,7 @@ Inspired by participation in the XPrize Covid Response competition of 2020-2021 
 ## Created by
 
 Josh [@Caellwyn](https://github.com/Caellwyn) - Data Scientist
+
 Layla [@Laylar](https://github.com/laylar) - DevOps, Front End Developer
 
 ## How to Use
