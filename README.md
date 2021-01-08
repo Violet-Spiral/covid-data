@@ -13,11 +13,13 @@ Inspired by participation in the XPrize Covid Response competition of 2020-2021 
 
 Josh [@Caellwyn](https://github.com/Caellwyn) - Data Scientist
 
-Layla [@Laylar](https://github.com/laylar) - DevOps, Front End Developer
+Layla [@laylar](https://github.com/laylar) - DevOps, Front End Developer
 
 ## How to Use
 
 Make your selections at the top and a new graph will appear, displaying up-to-date data below!
+
+![Checkboxes and a graph](/img/DemoImage2021-01-07.png)
 
 ## Some Story About Our Process
 
