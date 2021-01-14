@@ -1,5 +1,3 @@
-# This is a basic workflow to help you get started with Actions
-
 name: 'Download Covid Data'
 
 #Run at Midnight every day 
@@ -14,6 +12,8 @@ jobs:
 #Checkout Branch
       - name: Checkout
         uses: actions/checkout@v2
+        
 #Run file to download and process covid data csv      
       - name: Download
+        working-directory: ./
         run: python download_latest_covid_data.py
