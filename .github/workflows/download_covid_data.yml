@@ -3,9 +3,9 @@ name: 'Download New Covid Data'
 #Run at Midnight every day and when triggered
 on:
   workflow_dispatch:
-  schedule:
-    - cron: 
-        '0 0 * * *'
+#   schedule:
+#     - cron: 
+#         '0 0 * * *'
 
 jobs:
   download-data:
