@@ -1,27 +1,19 @@
 # This is a basic workflow to help you get started with Actions
 
 name: 'Download Covid Data'
-description: 'Download Covid Data and Save to .csv'
-author: 'Caellwyn'
-runs:
-  using: python-latest
-  main: 
 
-# Controls when the action will run. 
+#Run at Midnight every day 
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   schedule:
     - cron: '0 0 * * *'
-    branches: [ main ]
 
 jobs:
   download-data:
     runs-on: ubuntu-latest
     steps:
+#Checkout Branch
       - name: Checkout
         uses: actions/checkout@v2
-      
+#Run file to download and process covid data csv      
       - name: Download
-        uses: ./
-        id: download-data
         run: python download_latest_covid_data.py
