@@ -1,19 +1,24 @@
 name: 'Download Covid Data'
 
 #Run at Midnight every day 
+# on:
+#   schedule:
+#     - cron: '0 0 * * *'
+
 on:
-  schedule:
-    - cron: '0 0 * * *'
+  workflow-dispatch:
 
 jobs:
   download-data:
     runs-on: ubuntu-latest
     steps:
 #Checkout Branch
-      - name: Checkout
+      - name: checkout repo  
         uses: actions/checkout@v2
+      - name: setup python
+        uses: actions/setup-python@v2
+        with: python-version: 3.8
         
 #Run file to download and process covid data csv      
-      - name: Download
-        working-directory: ./
-        run: python download_latest_covid_data.py
+      - name: Download data
+        run: python ../../download_latest_covid_data.py
