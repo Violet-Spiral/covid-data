@@ -1,4 +1,4 @@
-name: 'Download Covid Data'
+name: 'Download New Covid Data'
 
 #Run at Midnight every day and when triggered
 on:
