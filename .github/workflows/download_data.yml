@@ -6,7 +6,7 @@ name: 'Download Covid Data'
 #     - cron: '0 0 * * *'
 
 on:
-  workflow-dispatch:
+  workflow_dispatch:
 
 jobs:
   download-data:
