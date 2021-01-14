@@ -24,3 +24,11 @@ jobs:
 #Run file to download and process covid data csv      
       - name: Download data
         run: python download_latest_covid_data.py
+      - name: Commit File
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Newest Data"
+          git push
+        
