@@ -23,7 +23,7 @@ Make your selections at the top and a new graph will appear, displaying up-to-da
 
 ## Some Story About Our Process
 
-We started this in a Jupyter Notebook, even got as far as building a prediction model with 99+% accuracy for 12/01 to 12/05 on 12/05 using FbProphet. We experimented with Sarimax, too.
+We started this in a Jupyter Notebook, even got as far as building a prediction model with 99+% accuracy for the United stats between 12/01 and 1/01 using statsmodels SARIMAX. We experimented with fbprophet, too, but didn't have as much success.
 
 Data and displays are useless if no one can see them, however! So we decided to deploy it live.
 
