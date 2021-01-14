@@ -21,4 +21,4 @@ jobs:
           python-version: '3.8'
 #Run file to download and process covid data csv      
       - name: Download data
-        run: python ../../download_latest_covid_data.py
+        run: python download_latest_covid_data.py
