@@ -1,12 +1,10 @@
 name: 'Download Covid Data'
 
 #Run at Midnight every day 
-# on:
-#   schedule:
-#     - cron: '0 0 * * *'
-
 on:
   workflow_dispatch:
+  schedule:
+   - cron: '0 0 * * *'
 
 jobs:
   download-data:
