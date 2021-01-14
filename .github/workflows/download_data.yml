@@ -1,6 +1,6 @@
 name: 'Download Covid Data'
 
-#Run at Midnight every day 
+#Run at Midnight every day and when triggered
 on:
   workflow_dispatch:
   schedule:
@@ -13,6 +13,7 @@ jobs:
 #Checkout Branch
       - name: checkout repo  
         uses: actions/checkout@v2
+# Setup Python
       - name: setup python
         uses: actions/setup-python@v2
         with: 
