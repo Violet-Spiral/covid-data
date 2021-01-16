@@ -7,7 +7,7 @@ import pandas as pd
 from src import *
 
 # get data
-full_df = get_covid_data()
+full_df = pd.read_csv('latest_covid_data.csv', parse_dates=['Date'], index_col = 'Date')
 unique_countries = sorted(full_df['CountryName'].unique())
 
 # set initial app settings
